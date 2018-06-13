@@ -55,6 +55,7 @@ public class GDELTData implements TutorialData {
     public SimpleFeatureType getSimpleFeatureType() {
         if (sft == null) {
             // list the attributes that constitute the feature type
+            // 列出组成要素类型的属性，这是从GDELT 2.0属性集，精简过的属性
             // this is a reduced set of the attributes from GDELT 2.0
             StringBuilder attributes = new StringBuilder();
             attributes.append("GLOBALEVENTID:String,");
@@ -62,6 +63,7 @@ public class GDELTData implements TutorialData {
             attributes.append("Actor1CountryCode:String,");
             attributes.append("Actor2Name:String,");
             attributes.append("Actor2CountryCode:String,");
+            // 这个字段将被索引
             attributes.append("EventCode:String:index=true,"); // marks this attribute for indexing
             attributes.append("NumMentions:Integer,");
             attributes.append("NumSources:Integer,");
@@ -70,15 +72,19 @@ public class GDELTData implements TutorialData {
             attributes.append("ActionGeo_FullName:String,");
             attributes.append("ActionGeo_CountryCode:String,");
             attributes.append("dtg:Date,");
+            // * 表示默认的集合（用于索引）
             attributes.append("*geom:Point:srid=4326"); // the "*" denotes the default geometry (used for indexing)
 
             // create the simple-feature type - use the GeoMesa 'SimpleFeatureTypes' class for best compatibility
+            // 有最好的兼容性，其他工具有一些要素可能无法工作
             // may also use geotools DataUtilities or SimpleFeatureTypeBuilder, but some features may not work
             sft = SimpleFeatureTypes.createType(getTypeName(), attributes.toString());
 
             // use the user-data (hints) to specify which date field to use for primary indexing
+            // 指出哪一个时间字段将用于主索引，如果没有指定，则第一个时间属性（如果有的话）将被使用
             // if not specified, the first date attribute (if any) will be used
             // could also use ':default=true' in the attribute specification string
+            // SimpleFeatureTypes.DEFAULT_DATE_KEY=geomesa.index.dtg
             sft.getUserData().put(SimpleFeatureTypes.DEFAULT_DATE_KEY, "dtg");
         }
         return sft;
