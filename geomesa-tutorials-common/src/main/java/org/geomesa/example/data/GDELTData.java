@@ -112,6 +112,7 @@ public class GDELTData implements TutorialData {
                 for (CSVRecord record : parser) {
                     try {
                         // pull out the fields corresponding to our simple feature attributes
+                        // 获取数据，设置和SimpleFeature相应的属性
                         builder.set("GLOBALEVENTID", record.get(0));
 
                         // some dates are converted implicitly, so we can set them as strings
@@ -141,6 +142,7 @@ public class GDELTData implements TutorialData {
                         builder.set("geom", "POINT (" + longitude + " " + latitude + ")");
 
                         // be sure to tell GeoTools explicitly that we want to use the ID we provided
+                        // 明确的告诉GeoTools，我们想使用我们自己提供的ID
                         builder.featureUserData(Hints.USE_PROVIDED_FID, java.lang.Boolean.TRUE);
 
                         // build the feature - this also resets the feature builder for the next entry
