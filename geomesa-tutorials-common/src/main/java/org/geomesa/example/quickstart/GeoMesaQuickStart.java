@@ -104,7 +104,6 @@ public abstract class GeoMesaQuickStart implements Runnable {
         if (datastore == null) {
             throw new RuntimeException("Could not create data store with provided parameters");
         }
-        System.out.println();
         return datastore;
     }
 
