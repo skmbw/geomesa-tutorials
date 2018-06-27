@@ -64,10 +64,12 @@ public class HBaseTest {
     // 关闭连接
     public static void close() {
         try {
-            if (null != admin)
+            if (null != admin) {
                 admin.close();
-            if (null != connection)
+            }
+            if (null != connection) {
                 connection.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -81,7 +83,7 @@ public class HBaseTest {
         TableName tableName = TableName.valueOf(tableNmae);
 
         if (admin.tableExists(tableName)) {
-            System.out.println("talbe is exists!");
+            System.out.println("table is exists!");
         } else {
             HTableDescriptor hTableDescriptor = new HTableDescriptor(tableName);
             for (String col : cols) {
@@ -176,6 +178,7 @@ public class HBaseTest {
             System.out.println("column Family:" + new String(CellUtil.cloneFamily(cell)) + " ");
             System.out.println("row Name:" + new String(CellUtil.cloneQualifier(cell)) + " ");
             System.out.println("value:" + new String(CellUtil.cloneValue(cell)) + " ");
+            System.out.println("get value:" + new String(cell.getValueArray()) + " ");
         }
     }
 
