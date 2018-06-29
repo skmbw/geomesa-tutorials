@@ -45,6 +45,9 @@ public class QueryTest {
                     SortBy sort = query.getSortBy()[0];
                     LOGGER.info("Sorting by " + sort.getPropertyName() + " " + sort.getSortOrder());
                 }
+
+                long d = System.currentTimeMillis();
+
                 // submit the query, and get back an iterator over matching features
                 // use try-with-resources to ensure the reader is closed
                 try (FeatureReader<SimpleFeatureType, SimpleFeature> reader =
@@ -53,14 +56,16 @@ public class QueryTest {
                     int n = 0;
                     for (;reader.hasNext();) {
                         SimpleFeature feature = reader.next();
-                        if (n++ < 10) {
+                        if (n < 10) {
                             // use geotools data utilities to get a printable string
                             LOGGER.info(String.format("%02d", n) + " " + DataUtilities.encodeFeature(feature));
                         } else if (n == 10) {
                             LOGGER.info("更多...");
+//                            break;
                         }
+                        n++;
                     }
-                    LOGGER.info("Returned " + n + " total features");
+                    LOGGER.info("Returned " + n + " total features, 用时time=[" + (System.currentTimeMillis() - d) + "]毫秒");
                 }
             }
         } catch (Exception e) {
