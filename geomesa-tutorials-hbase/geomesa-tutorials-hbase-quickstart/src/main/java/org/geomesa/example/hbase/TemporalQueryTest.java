@@ -7,18 +7,19 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author yinlei
- * @since 2018/7/3 15:14
+ * @since 2018/7/3 15:15
  */
-public class SpatialQueryTest {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SpatialQueryTest.class);
+public class TemporalQueryTest {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TemporalQueryTest.class);
 
     public static void main(String[] args) {
-        String bbox = "bbox(geom,-75,41,-73,39)";
+        String during = "dtg DURING 2015-12-31T00:00:00.000Z/2016-01-02T00:00:00.000Z";
         try {
             long d = System.currentTimeMillis();
-            Query query = new Query("gdelt-quickstart", ECQL.toFilter(bbox));
+            Query query = new Query("gdelt-quickstart", ECQL.toFilter(during));
             QueryCase queryCase = new QueryCase(query);
-            int count = 1000;
+            int count = 10000;
             for(int i = 0; i < count; i++) {
                 queryCase.run();
             }
