@@ -72,7 +72,7 @@ public class GeoMesaTask implements Runnable {
 
     @Override
     public void run() {
-        File directory = new File("D:\\downloads\\doc\\GDELT\\2016");
+        File directory = new File("D:\\downloads\\doc\\GDELT\\201601");
         File[] fileList = directory.listFiles();
         if (fileList == null) {
             LOGGER.info("没有获取到GDELT文件。");
@@ -87,10 +87,16 @@ public class GeoMesaTask implements Runnable {
         DataStore datastore;
 
         try {
+            long s = System.currentTimeMillis();
             datastore = createDataStore(params);
 
             SimpleFeatureType sft = getSimpleFeatureType(gdeltData);
             createSchema(datastore, sft);
+
+            LOGGER.info("创建DataStore和schema用时=[" + (System.currentTimeMillis() - s) + "]");
+
+            long totalSize = 0;
+            long totalTime = 0;
 
             for (File file : fileList) {
                 LOGGER.info("处理文件：[" + file.getPath() + "]开始...");
@@ -99,6 +105,7 @@ public class GeoMesaTask implements Runnable {
                 CSVParser parser = CSVParser.parse(is, StandardCharsets.UTF_8, CSVFormat.TDF);
 
                 List<SimpleFeature> featureList = new ArrayList<>();
+                long d = System.currentTimeMillis();
                 for (CSVRecord record : parser) {
                     try {
                         // 获取数据，设置和SimpleFeature相应的属性
@@ -139,14 +146,22 @@ public class GeoMesaTask implements Runnable {
                         SimpleFeature feature = builder.buildFeature(record.get(0));
                         featureList.add(feature);
                     } catch (Exception e) {
-                        LOGGER.info("Invalid GDELT record: " + e.toString() + " " + record.toString());
+                        LOGGER.debug("Invalid GDELT record: " + e.toString() + " " + record.toString());
                     }
                 }
-
-                LOGGER.info("解析文件[" + file.getPath() + "]构建feature完成。");
+                int size = featureList.size();
+                String filePath = file.getPath();
+                long time = System.currentTimeMillis() - d;
+                LOGGER.info("解析文件[{}]构建feature完成。记录数=[{}],用时time=[{}]", filePath, size, time);
+                LOGGER.info("开始插入文件[{}]记录", filePath);
+                d = System.currentTimeMillis();
                 writeFeatures(datastore, sft, featureList);
+                time = System.currentTimeMillis() - d;
+                LOGGER.info("完成插入文件[{}]记录.记录数=[{}],用时time=[{}]", filePath, size, time);
 
-                LOGGER.info("处理文件：[" + file.getPath() + "]结束.");
+                totalSize += size;
+                totalTime += time;
+                LOGGER.info("目前总的插入记录数=[{}]和总时间[{}],tps=[{}]", totalSize, totalTime, totalSize / (double)(totalTime / 1000));
             }
         } catch (Exception e) {
             // 精度和维度越界[-180,180][-90,90]

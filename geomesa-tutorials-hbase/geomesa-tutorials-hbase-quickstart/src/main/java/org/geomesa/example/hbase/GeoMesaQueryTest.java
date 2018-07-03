@@ -56,6 +56,7 @@ public class GeoMesaQueryTest {
                 CSVParser parser = CSVParser.parse(is, StandardCharsets.UTF_8, CSVFormat.TDF);
 
                 List<SimpleFeature> featureList = new ArrayList<>();
+                long d = System.currentTimeMillis();
                 for (CSVRecord record : parser) {
                     try {
                         // 获取数据，设置和SimpleFeature相应的属性
@@ -82,12 +83,12 @@ public class GeoMesaQueryTest {
                         double latitude;
                         double longitude;
                         if (StringUtils.isAnyBlank(lat, lng)) {
-                            LOGGER.warn("没有获取到经纬度，将模拟生成一个。");
+                            LOGGER.debug("没有获取到经纬度，将模拟生成一个。");
                             latitude = getLat();
                             longitude = getLng();
-                            LOGGER.info("模拟的经纬度是lat=[" + latitude + "], lng=[" + longitude + "]");
+                            LOGGER.debug("模拟的经纬度是lat=[" + latitude + "], lng=[" + longitude + "]");
                         } else {
-                            LOGGER.info("经纬度是lat=[" + lat + "], lng=[" + lng + "]");
+                            LOGGER.debug("经纬度是lat=[" + lat + "], lng=[" + lng + "]");
                             latitude = Double.parseDouble(record.get(53));
                             longitude = Double.parseDouble(record.get(54));
                         }
@@ -101,13 +102,13 @@ public class GeoMesaQueryTest {
                         // build the feature - this also resets the feature builder for the next entry
                         // use the GLOBALEVENTID as the feature ID
                         SimpleFeature feature = builder.buildFeature(record.get(0));
-//                        featureList.add(feature);
+                        featureList.add(feature);
                     } catch (Exception e) {
                         LOGGER.info("Invalid GDELT record: " + e.toString() + " " + record.toString());
                     }
                 }
-
-                LOGGER.info("处理文件：[" + file.getPath() + "]结束.");
+                long time = System.currentTimeMillis() - d;
+                LOGGER.info("处理文件：[" + file.getPath() + "]结束.记录数=[" + featureList.size() + "],用时time=[" + time + "]");
             }
         } catch (Exception e) {
             LOGGER.error(e.getMessage());

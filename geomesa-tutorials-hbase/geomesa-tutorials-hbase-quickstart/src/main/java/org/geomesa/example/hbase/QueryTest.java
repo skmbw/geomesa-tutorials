@@ -36,36 +36,38 @@ public class QueryTest {
             // 使用这个查询，数据里面有的没有数据，时间范围不在这里
             List<Query> queryList = data.getTestQueries();
 
-            for (Query query : queryList) {
-                LOGGER.info("Running query " + ECQL.toCQL(query.getFilter()));
-                if (query.getPropertyNames() != null) {
-                    LOGGER.info("Returning attributes " + Arrays.asList(query.getPropertyNames()));
-                }
-                if (query.getSortBy() != null) {
-                    SortBy sort = query.getSortBy()[0];
-                    LOGGER.info("Sorting by " + sort.getPropertyName() + " " + sort.getSortOrder());
-                }
-
-                long d = System.currentTimeMillis();
-
-                // submit the query, and get back an iterator over matching features
-                // use try-with-resources to ensure the reader is closed
-                try (FeatureReader<SimpleFeatureType, SimpleFeature> reader =
-                             datastore.getFeatureReader(query, Transaction.AUTO_COMMIT)) {
-                    // loop through all results, only print out the first 10
-                    int n = 0;
-                    for (;reader.hasNext();) {
-                        SimpleFeature feature = reader.next();
-                        if (n < 10) {
-                            // use geotools data utilities to get a printable string
-                            LOGGER.info(String.format("%02d", n) + " " + DataUtilities.encodeFeature(feature));
-                        } else if (n == 10) {
-                            LOGGER.info("更多...");
-//                            break;
-                        }
-                        n++;
+            for (int i = 0; i < 10; i++) {
+                for (Query query : queryList) {
+                    LOGGER.info("Running query " + ECQL.toCQL(query.getFilter()));
+                    if (query.getPropertyNames() != null) {
+                        LOGGER.info("Returning attributes " + Arrays.asList(query.getPropertyNames()));
                     }
-                    LOGGER.info("Returned " + n + " total features, 用时time=[" + (System.currentTimeMillis() - d) + "]毫秒");
+                    if (query.getSortBy() != null) {
+                        SortBy sort = query.getSortBy()[0];
+                        LOGGER.info("Sorting by " + sort.getPropertyName() + " " + sort.getSortOrder());
+                    }
+
+                    long d = System.currentTimeMillis();
+
+                    // submit the query, and get back an iterator over matching features
+                    // use try-with-resources to ensure the reader is closed
+                    try (FeatureReader<SimpleFeatureType, SimpleFeature> reader =
+                                 datastore.getFeatureReader(query, Transaction.AUTO_COMMIT)) {
+                        // loop through all results, only print out the first 10
+                        int n = 0;
+                        for (;reader.hasNext();) {
+                            SimpleFeature feature = reader.next();
+                            if (n < 10) {
+                                // use geotools data utilities to get a printable string
+                                LOGGER.info(String.format("%02d", n) + " " + DataUtilities.encodeFeature(feature));
+                            } else if (n == 10) {
+                                LOGGER.info("更多...");
+//                            break;
+                            }
+                            n++;
+                        }
+                        LOGGER.info("Returned " + n + " total features, 用时time=[" + (System.currentTimeMillis() - d) + "]毫秒");
+                    }
                 }
             }
         } catch (Exception e) {
