@@ -16,7 +16,7 @@ public class GeoMesaInsertDataToHBase {
 
     public static void main(String[] args) throws IOException {
         try {
-            String[] params = {"--hbase.zookeepers", "10.0.12.145", "--hbase.catalog", "t2"};
+            String[] params = {"--hbase.zookeepers", "10.0.12.145", "--hbase.catalog", "t1"};
             GeoMesaTask task = new GeoMesaTask(params, new HBaseDataStoreFactory().getParametersInfo());
             task.run();
         } catch (Exception e) {

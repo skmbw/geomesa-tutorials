@@ -72,7 +72,7 @@ public class GeoMesaTask implements Runnable {
 
     @Override
     public void run() {
-        File directory = new File("D:\\downloads\\doc\\GDELT\\201601");
+        File directory = new File("D:\\downloads\\doc\\GDELT\\201602");
         File[] fileList = directory.listFiles();
         if (fileList == null) {
             LOGGER.info("没有获取到GDELT文件。");
@@ -91,7 +91,7 @@ public class GeoMesaTask implements Runnable {
             datastore = createDataStore(params);
 
             SimpleFeatureType sft = getSimpleFeatureType(gdeltData);
-            createSchema(datastore, sft);
+//            createSchema(datastore, sft);
 
             LOGGER.info("创建DataStore和schema用时=[" + (System.currentTimeMillis() - s) + "]");
 

@@ -20,12 +20,12 @@ public class SpatialTemporalQueryTest {
             long d = System.currentTimeMillis();
             Query query = new Query("gdelt-quickstart", ECQL.toFilter(bbox + " AND " + during));
             QueryCase queryCase = new QueryCase(query);
-            int count = 15000;
+            int count = 18000;
             for(int i = 0; i < count; i++) {
                 queryCase.run();
             }
             long time = System.currentTimeMillis() - d;
-            LOGGER.info("查询次数count=[{}], 用时time=[{}], 每次查询响应时间=[{}]毫秒.", count, time, time / count);
+            LOGGER.info("查询次数count=[{}], 用时time=[{}]毫秒, 每次查询响应时间=[{}]毫秒.", count, time, time / count);
         } catch (Exception e) {
             LOGGER.error("空间查询错误。", e);
         }
