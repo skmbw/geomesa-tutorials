@@ -166,7 +166,7 @@ public class SimpleGDELTData implements TutorialData {
 
                 // most of the data is from 2018-01-01
                 // note: DURING is endpoint exclusive
-                String during = "dtg DURING 2017-12-31T00:00:00.000Z/2018-01-02T00:00:00.000Z";
+                String during = "dtg DURING 2015-12-31T00:00:00.000Z/2016-01-02T00:00:00.000Z";
                 // bounding box over most of the united states
                 String bbox = "bbox(geom,-120,30,-75,55)";
 
