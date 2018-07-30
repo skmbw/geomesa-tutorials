@@ -139,7 +139,7 @@
                             <goal>check</goal>
                         </goals>
                         <configuration>
-                            <failOnError>true</failOnError>
+                            <!--<failOnError>true</failOnError>-->
                             <checkstyleRules>
                                 <module name="Checker">
                                     <module name="NewlineAtEndOfFile" />

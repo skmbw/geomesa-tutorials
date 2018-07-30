@@ -32,15 +32,11 @@ import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
-public class GDELTData implements TutorialData {
+public class SimpleGDELTData implements TutorialData {
 
-    private static final Logger logger = LoggerFactory.getLogger(GDELTData.class);
+    private static final Logger logger = LoggerFactory.getLogger(SimpleGDELTData.class);
 
     private SimpleFeatureType sft = null;
     private List<SimpleFeature> features = null;
@@ -59,18 +55,18 @@ public class GDELTData implements TutorialData {
             // this is a reduced set of the attributes from GDELT 2.0
             StringBuilder attributes = new StringBuilder();
             attributes.append("GLOBALEVENTID:String,");
-            attributes.append("Actor1Name:String,");
-            attributes.append("Actor1CountryCode:String,");
-            attributes.append("Actor2Name:String,");
-            attributes.append("Actor2CountryCode:String,");
+//            attributes.append("Actor1Name:String,");
+//            attributes.append("Actor1CountryCode:String,");
+//            attributes.append("Actor2Name:String,");
+//            attributes.append("Actor2CountryCode:String,");
             // 这个字段将被索引
             attributes.append("EventCode:String:index=true,"); // marks this attribute for indexing
-            attributes.append("NumMentions:Integer,");
-            attributes.append("NumSources:Integer,");
-            attributes.append("NumArticles:Integer,");
-            attributes.append("ActionGeo_Type:Integer,");
-            attributes.append("ActionGeo_FullName:String,");
-            attributes.append("ActionGeo_CountryCode:String,");
+//            attributes.append("NumMentions:Integer,");
+//            attributes.append("NumSources:Integer,");
+//            attributes.append("NumArticles:Integer,");
+//            attributes.append("ActionGeo_Type:Integer,");
+//            attributes.append("ActionGeo_FullName:String,");
+//            attributes.append("ActionGeo_CountryCode:String,");
             attributes.append("dtg:Date,");
             // * 表示默认的集合（用于索引）
             attributes.append("*geom:Point:srid=4326"); // the "*" denotes the default geometry (used for indexing)
@@ -120,20 +116,20 @@ public class GDELTData implements TutorialData {
                         builder.set("dtg",
                             Date.from(LocalDate.parse(record.get(1), dateFormat).atStartOfDay(ZoneOffset.UTC).toInstant()));
 
-                        builder.set("Actor1Name", record.get(6));
-                        builder.set("Actor1CountryCode", record.get(7));
-                        builder.set("Actor2Name", record.get(16));
-                        builder.set("Actor2CountryCode", record.get(17));
+//                        builder.set("Actor1Name", record.get(6));
+//                        builder.set("Actor1CountryCode", record.get(7));
+//                        builder.set("Actor2Name", record.get(16));
+//                        builder.set("Actor2CountryCode", record.get(17));
                         builder.set("EventCode", record.get(26));
 
                         // we can also explicitly convert to the appropriate type
-                        builder.set("NumMentions", Integer.valueOf(record.get(31)));
-                        builder.set("NumSources", Integer.valueOf(record.get(32)));
-                        builder.set("NumArticles", Integer.valueOf(record.get(33)));
+//                        builder.set("NumMentions", Integer.valueOf(record.get(31)));
+//                        builder.set("NumSources", Integer.valueOf(record.get(32)));
+//                        builder.set("NumArticles", Integer.valueOf(record.get(33)));
 
-                        builder.set("ActionGeo_Type", record.get(51));
-                        builder.set("ActionGeo_FullName", record.get(52));
-                        builder.set("ActionGeo_CountryCode", record.get(53));
+//                        builder.set("ActionGeo_Type", record.get(51));
+//                        builder.set("ActionGeo_FullName", record.get(52));
+//                        builder.set("ActionGeo_CountryCode", record.get(53));
 
                         // we can use WKT (well-known-text) to represent geometries
                         // note that we use longitude first ordering
@@ -143,7 +139,7 @@ public class GDELTData implements TutorialData {
 
                         // be sure to tell GeoTools explicitly that we want to use the ID we provided
                         // 明确的告诉GeoTools，我们想使用我们自己提供的ID
-                        builder.featureUserData(Hints.USE_PROVIDED_FID, java.lang.Boolean.TRUE);
+                        builder.featureUserData(Hints.USE_PROVIDED_FID, Boolean.TRUE);
 
                         // build the feature - this also resets the feature builder for the next entry
                         // use the GLOBALEVENTID as the feature ID
@@ -170,7 +166,7 @@ public class GDELTData implements TutorialData {
 
                 // most of the data is from 2018-01-01
                 // note: DURING is endpoint exclusive
-                String during = "dtg DURING 2017-12-31T00:00:00.000Z/2018-01-02T00:00:00.000Z";
+                String during = "dtg DURING 2015-12-31T00:00:00.000Z/2016-01-02T00:00:00.000Z";
                 // bounding box over most of the united states
                 String bbox = "bbox(geom,-120,30,-75,55)";
 
