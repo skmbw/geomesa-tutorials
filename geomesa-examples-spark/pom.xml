@@ -20,7 +20,7 @@
     <inceptionYear>2013</inceptionYear>
 
     <properties>
-        <spark.version>2.0.2</spark.version>
+        <spark.version>2.2.2</spark.version>
     </properties>
 
     <dependencyManagement>
@@ -123,7 +123,11 @@
             <groupId>org.locationtech.geomesa</groupId>
             <artifactId>geomesa-hbase-datastore_${scala.abi.version}</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.locationtech.geomesa</groupId>
+            <artifactId>geomesa-hbase-spark_${scala.abi.version}</artifactId>
+            <version>${geomesa.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.hbase</groupId>
             <artifactId>hbase-client</artifactId>
