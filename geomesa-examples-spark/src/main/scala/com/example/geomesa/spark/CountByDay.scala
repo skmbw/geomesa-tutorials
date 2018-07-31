@@ -16,7 +16,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 import org.geotools.data.{DataStoreFinder, Query}
 import org.geotools.factory.CommonFactoryFinder
 import org.geotools.filter.text.ecql.ECQL
-import org.locationtech.geomesa.accumulo.data.AccumuloDataStore
+import org.locationtech.geomesa.hbase.data.HBaseDataStore
 import org.locationtech.geomesa.spark.GeoMesaSpark
 import org.opengis.feature.simple.SimpleFeature
 
@@ -26,24 +26,24 @@ object CountByDay {
 
   val params = Map(
     "instanceId" -> "mycloud",
-    "zookeepers" -> "zoo1,zoo2,zoo3",
+    "zookeepers" -> "10.0.12.145",
     "user"       -> "user",
     "password"   -> "password",
-    "tableName"  -> "geomesa.gdelt")
+    "tableName"  -> "test1")
 
   // see geomesa-tools/conf/sfts/gdelt/reference.conf
-  val typeName = "gdelt"
+  val typeName = "gdelt-quickstart"
   val geom     = "geom"
   val date     = "dtg"
 
   val bbox   = "-80, 35, -79, 36"
-  val during = "2014-01-01T00:00:00.000Z/2014-01-31T12:00:00.000Z"
+  val during = "2016-01-01T00:00:00.000Z/2016-01-31T12:00:00.000Z"
 
   val filter = s"bbox($geom, $bbox) AND $date during $during"
 
   def main(args: Array[String]) {
     // Get a handle to the data store
-    val ds = DataStoreFinder.getDataStore(params).asInstanceOf[AccumuloDataStore]
+    val ds = DataStoreFinder.getDataStore(params).asInstanceOf[HBaseDataStore]
 
     // Construct a CQL query to filter by bounding box
     val q = new Query(typeName, ECQL.toFilter(filter))
