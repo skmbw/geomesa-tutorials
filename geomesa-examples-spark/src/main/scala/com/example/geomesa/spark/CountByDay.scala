@@ -34,11 +34,13 @@ object CountByDay {
     // 有这两个参数，就会创建Acculumo的数据源，现在改为使用hbase的数据源
 //    "instanceId" -> "server1",
 //    "zookeepers" -> "10.0.12.145",
+
     "user"       -> "root",
     "password"   -> "123456",
     "hbase.zookeepers" -> "10.0.12.145",
     "hbase.catalog" -> "t1",
-    "tableName" -> "t1")
+    "tableName" -> "t1"
+  )
 
   // see geomesa-tools/conf/sfts/gdelt/reference.conf
   val typeName = "gdelt-quickstart"
@@ -50,7 +52,7 @@ object CountByDay {
 
   val filter = s"bbox($geom, $bbox) AND $date during $during"
 
-  def main(args: Array[String]) {
+  def main(args: Array[String]): Unit = {
     // Get a handle to the data store
     val ds = DataStoreFinder.getDataStore(params).asInstanceOf[HBaseDataStore]
 
@@ -58,7 +60,8 @@ object CountByDay {
     val q = new Query(typeName, ECQL.toFilter(filter))
 
     // Configure Spark
-    val conf = new SparkConf().setAppName("testSpark")
+    // 指定master，否则要把jar放到145那台机器上跑
+    val conf = new SparkConf().setMaster("spark://10.0.12.145:7077").setAppName("testSpark")
     val sc = SparkContext.getOrCreate(conf)
 
     // Get the appropriate spatial RDD provider
