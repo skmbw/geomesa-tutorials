@@ -25,19 +25,18 @@ import scala.collection.JavaConversions._
 object CountByDay {
 
   //  val params = Map(
+  // 有这两个参数，就会创建Acculumo的数据源，现在改为使用hbase的数据源
   //    "instanceId" -> "mycloud",
   //    "zookeepers" -> "10.0.12.145",
   //    "user"       -> "user",
   //    "password"   -> "password",
   //    "tableName"  -> "test1")
   val params = Map(
-    // 有这两个参数，就会创建Acculumo的数据源，现在改为使用hbase的数据源
-//    "instanceId" -> "server1",
-//    "zookeepers" -> "10.0.12.145",
-
     "user"       -> "root",
     "password"   -> "123456",
-    "hbase.zookeepers" -> "10.0.12.145",
+    "hbase.zookeepers" -> "server1",
+//    "hbase.zookeeper.property.clientPort" -> "2181",
+//    "hbase.zookeeper.quorum" -> "server1,server2,server3",
     "hbase.catalog" -> "t1",
     "tableName" -> "t1"
   )
@@ -61,7 +60,9 @@ object CountByDay {
 
     // Configure Spark
     // 指定master，否则要把jar放到145那台机器上跑
-    val conf = new SparkConf().setMaster("spark://10.0.12.145:7077").setAppName("testSpark")
+//    val jars : Array[String] = new Array[String](1)
+//    jars(0) = "F:\\IdeaProjects\\geomesa-tutorials\\geomesa-examples-spark\\target\\geomesa-examples-spark-2.1.0-SNAPSHOT.jar"
+    val conf = new SparkConf().setMaster("spark://server1:7077").setAppName("testSpark")
     val sc = SparkContext.getOrCreate(conf)
 
     // Get the appropriate spatial RDD provider
