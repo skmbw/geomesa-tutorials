@@ -25,6 +25,12 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.12</version>
+                <scope>test</scope>
+            </dependency>
             <!-- redefine provided dependencies as runtime for ease in setting up the classpath -->
             <!--<dependency>-->
                 <!--<groupId>org.apache.accumulo</groupId>-->

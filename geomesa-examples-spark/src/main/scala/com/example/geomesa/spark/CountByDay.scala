@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat
 import org.apache.hadoop.conf.Configuration
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{SparkConf, SparkContext}
+import org.apache.zookeeper.client.ZooKeeperSaslClient
 import org.geotools.data.{DataStoreFinder, Query}
 import org.geotools.factory.CommonFactoryFinder
 import org.geotools.filter.text.ecql.ECQL
@@ -31,9 +32,9 @@ object CountByDay {
   //    "user"       -> "user",
   //    "password"   -> "password",
   //    "tableName"  -> "test1")
+
+  // 这个是hbase为数据源的参数，只需要这三个
   val params = Map(
-    "user"       -> "root",
-    "password"   -> "123456",
     "hbase.zookeepers" -> "server1",
 //    "hbase.zookeeper.property.clientPort" -> "2181",
 //    "hbase.zookeeper.quorum" -> "server1,server2,server3",
@@ -62,14 +63,16 @@ object CountByDay {
     // 指定master，否则要把jar放到145那台机器上跑
 //    val jars : Array[String] = new Array[String](1)
 //    jars(0) = "F:\\IdeaProjects\\geomesa-tutorials\\geomesa-examples-spark\\target\\geomesa-examples-spark-2.1.0-SNAPSHOT.jar"
-    val conf = new SparkConf().setMaster("spark://server1:7077").setAppName("testSpark")
+    val conf = new SparkConf()
+//      .setMaster("spark://server1:7077").setAppName("testSpark")
     val sc = SparkContext.getOrCreate(conf)
 
     // Get the appropriate spatial RDD provider
     val spatialRDDProvider = GeoMesaSpark(params)
 
     // Get an RDD[SimpleFeature] from the spatial RDD provider
-    val rdd = spatialRDDProvider.rdd(new Configuration, sc, params, q)
+    val configuration = new Configuration
+    val rdd = spatialRDDProvider.rdd(configuration, sc, params, q)
 
     // Collect the results and print
     countByDay(rdd).collect().foreach(println)
