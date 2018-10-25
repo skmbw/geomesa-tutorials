@@ -49,6 +49,8 @@ To Do:
 '''----------------------------------------------------------------------------------------------------------------------'''
 #from __future__ import print_function
 import os, sys
+import jnius_config
+import test_jnius
 
 class SetupJnius:
     def __init__(self, classpath=None):
@@ -58,6 +60,10 @@ class SetupJnius:
         if classpath is not None:
             java_classpath = os.path.expanduser(classpath)
             os.environ['CLASSPATH'] = java_classpath
+            jar_list = test_jnius.GetFileList(java_classpath, ["jar"])
+            for jar in jar_list:
+                jnius_config.add_classpath(jar)
+
         try:
             from jnius import autoclass as _autoclass
             from jnius import cast as _cast
@@ -126,6 +132,6 @@ class SetupJnius:
         Hadoop = self.find_javaclass("org.apache.hadoop.io.Writable", msg="Hadoop")
         #zookeeper test:
         zookeeper = self.find_javaclass("org.apache.zookeeper.KeeperException", msg="zookeeper")
-        #Accumulo test:
-        accumulo = self.find_javaclass("org.apache.accumulo.core.util.Version", msg="accumulo")
-        return GeoMesa and Hadoop and zookeeper and accumulo
+        #HBase test:
+        hbase = self.find_javaclass("org.apache.hadoop.hbase.util.VersionInfo", msg="hbase")
+        return GeoMesa and Hadoop and zookeeper and hbase

@@ -49,6 +49,7 @@ from utils.geomesa_jnius_setup import *
 from utils.quickstart_command_line_parser import getArgs
 from pyJavaClasses.datastore import getDataStore, createAccumuloDBConf
 from tools.ECQL import filter
+import os
 '''----------------------------------------------------------------------------------------------------------------------'''
 ''' Setup quickstart data access & display functions: '''
 '''----------------------------------------------------------------------------------------------------------------------'''
@@ -65,46 +66,60 @@ def queryFeaturesToDict(ecql, simpleFeatureTypeName, dataStore, filter_string):
     while featureIter.hasNext():
         feature = featureIter.next()
         n += 1
-        results[n] = {"who":feature.getProperty("Who").getValue(),
-                              "what":feature.getProperty("What").getValue(),
-                              "when":datetime.strptime(feature.getProperty("When").getValue().toString(), "%a %b %d %H:%M:%S %Z %Y"),
-                              "geometry":feature.getProperty("Where").getValue(),
-                              "where":feature.getProperty("Where").getValue().toString(),
-                              "x":feature.getProperty("Where").getValue().x,
-                              "y":feature.getProperty("Where").getValue().y,
-                              "why":feature.getProperty("Why").getValue().__str__() }
+        results[n] = {
+            "GlobalEventID": feature.getProperty("GlobalEventID").getValue(),
+            "Actor1Code": feature.getProperty("Actor1Code").getValue(),
+            "Actor1Name": feature.getProperty("Actor1Name").getValue()
+        }
+        # results[n] = {"who":feature.getProperty("Who").getValue(),
+        #                       "what":feature.getProperty("What").getValue(),
+        #                       "when":datetime.strptime(feature.getProperty("When").getValue().toString(), "%a %b %d %H:%M:%S %Z %Y"),
+        #                       "geometry":feature.getProperty("Where").getValue(),
+        #                       "where":feature.getProperty("Where").getValue().toString(),
+        #                       "x":feature.getProperty("Where").getValue().x,
+        #                       "y":feature.getProperty("Where").getValue().y,
+        #                       "why":feature.getProperty("Why").getValue().__str__() }
     featureIter.close()
     return(results)
 
 def printQuickStart(quickStart_dict):
-    ''' Print the quickstart feature dict: '''
+    """ Print the quickstart feature dict: """
     for k in sorted(quickStart_dict.keys()):
-        print("{}.\t{}|{}|{}|{}|{}".format(k, quickStart_dict[k]["who"], quickStart_dict[k]["what"],
-                  quickStart_dict[k]["when"].strftime("%a %b %d %H:%M:%S %Z %Y"), 
-                  quickStart_dict[k]["where"], quickStart_dict[k]["why"]))
-'''----------------------------------------------------------------------------------------------------------------------'''
+        # print("{}.\t{}|{}|{}|{}|{}".format(k, quickStart_dict[k]["who"], quickStart_dict[k]["what"],
+        #           quickStart_dict[k]["when"].strftime("%a %b %d %H:%M:%S %Z %Y"),
+        #           quickStart_dict[k]["where"], quickStart_dict[k]["why"]))
+        print("{}.\t{}|{}".format(k, quickStart_dict[k]["GlobalEventID"], quickStart_dict[k]["Actor1Code"],
+                                           quickStart_dict[k]["Actor1Name"]))
+'''---------------------------------------------------------------------------------------------------------------'''
 ''' End GeoMesa query functions: '''
-'''----------------------------------------------------------------------------------------------------------------------'''
+'''---------------------------------------------------------------------------------------------------------------'''
 
 if __name__ == "__main__":
-    '''----------------------------------------------------------------------------------------------------------------------'''
+    '''--------------------------------------------------------------------------------------------------------------'''
     ''' Get the runtime options: '''
-    '''----------------------------------------------------------------------------------------------------------------------'''
+    '''--------------------------------------------------------------------------------------------------------------'''
+    # 这个可以去掉
     args = getArgs()
-    '''----------------------------------------------------------------------------------------------------------------------'''
+    '''--------------------------------------------------------------------------------------------------------------'''
     ''' Setup jnius for GeoMesa java calls: '''
-    '''----------------------------------------------------------------------------------------------------------------------'''
-    classpath = args.classpath
+    '''--------------------------------------------------------------------------------------------------------------'''
+    # classpath = args.classpath
+    classpath = os.path.dirname(os.path.abspath(__file__)) + '/lib/'
     jni = SetupJnius(classpath=classpath)
-    '''----------------------------------------------------------------------------------------------------------------------'''
+    '''--------------------------------------------------------------------------------------------------------------'''
     ''' Setup data for GeoMesa query: '''
-    '''----------------------------------------------------------------------------------------------------------------------'''
-    simpleFeatureTypeName = "AccumuloQuickStart"
-    dsconf_dict = {'instanceId':args.instanceId, 
-                     'zookeepers':args.zookeepers, 
-                     'user':args.user,
-                     'password':args.password,
-                     'tableName':args.tableName }
+    '''--------------------------------------------------------------------------------------------------------------'''
+    simpleFeatureTypeName = "newgdelt"
+    # dsconf_dict = {'instanceId':args.instanceId,
+    #                  'zookeepers':args.zookeepers,
+    #                  'user':args.user,
+    #                  'password':args.password,
+    #                  'tableName':args.tableName }
+    dsconf_dict = {
+        "hbase.zookeepers": "server1",
+        "hbase.catalog": "gdelt2",
+        "tableName": "newgdelt"
+    }
 
     dsconf = createAccumuloDBConf(jni, dsconf_dict)
     
@@ -112,15 +127,16 @@ if __name__ == "__main__":
     ECQL = filter.ECQLQuery(jni)
     
     if not args.no_print:
-        bbox_filter = filter.createBBoxFilter("Where", -77.5, -37.5, -76.5, -36.5)
-        when_filter = filter.createDuringFilter("When", "2014-07-01T00:00:00.000Z", "2014-09-30T23:59:59.999Z")
-        who_filter = filter.createAttributeFilter("(Who = 'Bierce')")
-        combined_filter = "{} AND {} AND {}".format(bbox_filter, when_filter, who_filter)        
+        # bbox_filter = filter.createBBoxFilter("Where", -77.5, -37.5, -76.5, -36.5)
+        # when_filter = filter.createDuringFilter("When", "2014-07-01T00:00:00.000Z", "2014-09-30T23:59:59.999Z")
+        # who_filter = filter.createAttributeFilter("(Who = 'Bierce')")
+        # combined_filter = "{} AND {} AND {}".format(bbox_filter, when_filter, who_filter)
+        combined_filter = "bbox(Actor1Point,-79.0198,42.83,-70.9278,39.759861)"
         quickstart = queryFeaturesToDict(ECQL, simpleFeatureTypeName, dataStore, combined_filter)
         printQuickStart(quickstart)
     
-    if args.plot:
-        from utils.geomesa_plotting import plotGeoPoints
-        all_pts_bbox_filter = filter.createBBoxFilter("Where", -78.0, -39.0, -76.0, -37.0)
-        all_points = queryFeaturesToDict(ECQL, simpleFeatureTypeName, dataStore, all_pts_bbox_filter)
-        plotGeoPoints(all_points, "Quickstart demo (jnius)", save_dir=args.out_dir)
+    # if args.plot:
+    #     from utils.geomesa_plotting import plotGeoPoints
+    #     all_pts_bbox_filter = filter.createBBoxFilter("Where", -78.0, -39.0, -76.0, -37.0)
+    #     all_points = queryFeaturesToDict(ECQL, simpleFeatureTypeName, dataStore, all_pts_bbox_filter)
+    #     plotGeoPoints(all_points, "Quickstart demo (jnius)", save_dir=args.out_dir)

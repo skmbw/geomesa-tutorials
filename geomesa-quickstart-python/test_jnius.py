@@ -1,13 +1,9 @@
+#coding:utf-8
 """
-    auth: bear
-    date: 2016-04-13
     使用说明:使用之前必须安装好jnius,在安装jnius之前一定要确定java环境已经配好
     使用这个只需要把jar包拷贝到当前文件夹下，然后配置PACKAGE_CONFIGS
-
    通过import就可以直接使用 例如:
-
      import java
-
      java.python中的引用名
 
      也可以不用java这个名字，全凭个人喜好
@@ -22,16 +18,16 @@ import os
 global JAVA_INITED
 JAVA_INITED = False
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__)) + '/'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__)) + '/lib/'
 
 
 def IsSubString(SubStrList, Str):
-    '''
+    """
     #判断字符串Str是否包含序列SubStrList中的每一个子字符串
     #>>>SubStrList=['F','EMS','txt']
     #>>>Str='F06925EMS91.txt'
     #>>>IsSubString(SubStrList,Str)#return True (or False)
-    '''
+    """
 
     flag = True
     for substr in SubStrList:
@@ -41,11 +37,11 @@ def IsSubString(SubStrList, Str):
 
 
 def GetFileList(FindPath, FlagStr=[]):
-    '''
+    """
     #获取目录中指定的文件名
     #>>>FlagStr=['F','EMS','txt'] #要求文件名称中包含这些字符
     #>>>FileList=GetFileList(FindPath,FlagStr) #
-    '''
+    """
 
     import os
 
@@ -72,6 +68,11 @@ def getjars():
     return GetFileList(BASE_DIR, ['jar'])
 
 
+def importJars():
+    for jar in getjars():
+        add_classpath(jar)
+
+
 def __importJars():
     global JAVA_INITED
 
@@ -86,9 +87,15 @@ def __importJars():
         jniusTest = func()
         print(jniusTest.tos("3245"))
         ArrayList = autoclass("java.util.ArrayList")
+        commonUtils = autoclass("com.cethik.geomesa.utils.CommonUtils")
+        utils = commonUtils()
+        print(utils.standardDeviation([2.0, 3.0]))
         list = ArrayList()
-        list.add('aa');
+        list.add('aa')
+        list.add('尹雷')
         print(list.get(0))
+        print(list.get(1))
+        # print('2222')
         # setattr(java, info.get('name'), func)
 
 
@@ -106,9 +113,10 @@ def add_classpath(path):
     jnius_config.add_classpath(path)
 
 
-if not JAVA_INITED:
-    __importJars()
+# if not JAVA_INITED:
+#     __importJars()
 
 if __name__ == "__main__":
-    import java
-    print(java.tos("22"))
+    print(1)
+    # import java
+    # print(java.tos("22"))

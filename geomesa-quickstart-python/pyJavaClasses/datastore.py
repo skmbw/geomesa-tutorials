@@ -22,15 +22,28 @@ Updates:
 
 To Do:
 """
+
 def getDataStore(JNI, dbConf):
     ''' This function reflects the Java DataStoreFinder class to get a datastore from
         a mapping of database parameters. '''
-    class DataStoreFinder(JNI.JavaClass):
-        __javaclass__ = "org/geotools/data/DataStoreFinder"
-        __metaclass__ = JNI.MetaJavaClass
-        getDataStore = JNI.JavaMethod('(Ljava/util/Map;)Lorg/geotools/data/DataStore;', static=True)
-    
-    return DataStoreFinder.getDataStore(dbConf)
+
+    GeoMesaDataSource = JNI.autoclass('com.cethik.geomesa.datastore.GeoMesaDataSource')
+    dataSource = GeoMesaDataSource()
+    dataSource.setCatalog("gdelt2")
+    dataSource.init()
+    return dataSource.getDataStore()
+    # print(dataSource.getCatalog())
+
+    # 这里测试已经成功
+    # dataSource.queryJson("newgdelt",
+    #                             "bbox(Actor1Point,-74.0198,40.83,-73.9278,40.759861) AND Date DURING 2018-10-21T00:00:00.000Z/2018-10-23T23:59:00.000Z")
+
+    # class DataStoreFinder(JNI.JavaClass):
+    #     __javaclass__ = "org/geotools/data/DataStoreFinder"
+    #     __metaclass__ = JNI.MetaJavaClass
+    #     getDataStore = JNI.JavaMethod('(Ljava/util/Map;)Lorg/geotools/data/DataStore;', static=True)
+    # return DataStoreFinder.getDataStore(dbConf)
+
 
 def createAccumuloDBConf(JNI, conf_dict):
     '''  Create a DataStore config map (java hashmap using jnius) from a dict of parameters. '''
