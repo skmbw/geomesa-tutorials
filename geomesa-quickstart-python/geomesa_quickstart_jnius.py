@@ -99,12 +99,15 @@ if __name__ == "__main__":
     ''' Get the runtime options: '''
     '''--------------------------------------------------------------------------------------------------------------'''
     # 这个可以去掉
-    args = getArgs()
+    # args = getArgs()
     '''--------------------------------------------------------------------------------------------------------------'''
     ''' Setup jnius for GeoMesa java calls: '''
     '''--------------------------------------------------------------------------------------------------------------'''
     # classpath = args.classpath
+
+    # 加载当前目录lib下的jar
     classpath = os.path.dirname(os.path.abspath(__file__)) + '/lib/'
+    # jni 就是jnius的对象，有了他就可以autoclass java对象
     jni = SetupJnius(classpath=classpath)
     '''--------------------------------------------------------------------------------------------------------------'''
     ''' Setup data for GeoMesa query: '''
@@ -115,6 +118,7 @@ if __name__ == "__main__":
     #                  'user':args.user,
     #                  'password':args.password,
     #                  'tableName':args.tableName }
+    # 这里是 geomesa的连接参数配置
     dsconf_dict = {
         "hbase.zookeepers": "server1",
         "hbase.catalog": "gdelt2",
@@ -122,18 +126,27 @@ if __name__ == "__main__":
     }
 
     dsconf = createAccumuloDBConf(jni, dsconf_dict)
-    
+
+    # 获得dataStore就可以做响应的操作了，这个是底层的存储。应该使用GeoMesaDataSource，这个是封装的api
+    # 应该修改getDataStore方法，返回GeoMesaDataSource对象，这样就可以使用封装的api了
     dataStore = getDataStore(jni, dsconf) # this may not work in python 3.5
     ECQL = filter.ECQLQuery(jni)
-    
-    if not args.no_print:
-        # bbox_filter = filter.createBBoxFilter("Where", -77.5, -37.5, -76.5, -36.5)
-        # when_filter = filter.createDuringFilter("When", "2014-07-01T00:00:00.000Z", "2014-09-30T23:59:59.999Z")
-        # who_filter = filter.createAttributeFilter("(Who = 'Bierce')")
-        # combined_filter = "{} AND {} AND {}".format(bbox_filter, when_filter, who_filter)
-        combined_filter = "bbox(Actor1Point,-79.0198,42.83,-70.9278,39.759861)"
-        quickstart = queryFeaturesToDict(ECQL, simpleFeatureTypeName, dataStore, combined_filter)
-        printQuickStart(quickstart)
+
+    # 这是一个范围查询的例子
+    combined_filter = "bbox(Actor1Point,-79.0198,42.83,-70.9278,39.759861)"
+    quickstart = queryFeaturesToDict(ECQL, simpleFeatureTypeName, dataStore, combined_filter)
+    printQuickStart(quickstart)
+
+    # if not args.no_print:
+    #     # bbox_filter = filter.createBBoxFilter("Where", -77.5, -37.5, -76.5, -36.5)
+    #     # when_filter = filter.createDuringFilter("When", "2014-07-01T00:00:00.000Z", "2014-09-30T23:59:59.999Z")
+    #     # who_filter = filter.createAttributeFilter("(Who = 'Bierce')")
+    #     # combined_filter = "{} AND {} AND {}".format(bbox_filter, when_filter, who_filter)
+    #
+    #     # 这是一个范围查询的例子
+    #     combined_filter = "bbox(Actor1Point,-79.0198,42.83,-70.9278,39.759861)"
+    #     quickstart = queryFeaturesToDict(ECQL, simpleFeatureTypeName, dataStore, combined_filter)
+    #     printQuickStart(quickstart)
     
     # if args.plot:
     #     from utils.geomesa_plotting import plotGeoPoints

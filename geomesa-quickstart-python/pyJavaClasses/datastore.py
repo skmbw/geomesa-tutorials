@@ -24,14 +24,16 @@ To Do:
 """
 
 def getDataStore(JNI, dbConf):
-    ''' This function reflects the Java DataStoreFinder class to get a datastore from
-        a mapping of database parameters. '''
+    """ This function reflects the Java DataStoreFinder class to get a datastore from
+        a mapping of database parameters. """
 
+    # 其实应该返回 这个对象
     GeoMesaDataSource = JNI.autoclass('com.cethik.geomesa.datastore.GeoMesaDataSource')
     dataSource = GeoMesaDataSource()
     dataSource.setCatalog("gdelt2")
     dataSource.init()
     return dataSource.getDataStore()
+    # return dataSource
     # print(dataSource.getCatalog())
 
     # 这里测试已经成功
